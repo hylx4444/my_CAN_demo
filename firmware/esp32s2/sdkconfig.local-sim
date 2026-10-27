@@ -1,0 +1,4 @@
+# 文件作用：在 S2 Mini 默认配置基础上启用本地模拟模式。
+# 包含模块：本地模拟数据源开关，不改变串口模式的独立构建配置。
+# 调用方式：build_esp32s2.ps1 指定 -LocalSimulation 时作为附加默认配置加载。
+CONFIG_DEMO_LOCAL_SIMULATION=y

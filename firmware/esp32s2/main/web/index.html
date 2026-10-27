@@ -1,0 +1,146 @@
+<!--
+文件作用：在手机和电脑浏览器中展示温湿度、通信状态及模拟控制结果。
+包含模块：页面结构、响应式样式、状态轮询、双轴趋势图、数据过期提示、模拟控制事件。
+-->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#103c39"><title>CAN 温湿度监测</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:#173a37;background:#f4f6f2;font-synthesis:none;--muted:#69817b;--line:#dce5df;--green:#176c56}*{box-sizing:border-box}body{margin:0}header{background:#103c39;color:#f8fff9;padding:36px max(24px,calc((100vw - 1080px)/2)) 62px}nav{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;letter-spacing:1px}.logo{font-weight:750;display:flex;align-items:center;gap:10px}.mark{display:grid;place-items:center;width:32px;height:32px;border:1px solid #5b8c7d;border-radius:9px;color:#b9e6b5}h1{font-size:clamp(28px,5vw,42px);font-weight:650;letter-spacing:-1px;margin:36px 0 10px}header p{color:#b6ccc3;margin:0;font-size:14px}.pill{border-radius:30px;padding:8px 12px;border:1px solid #6a8d80;font-size:12px;white-space:nowrap}main{max-width:1128px;padding:0 24px 32px;margin:-30px auto 0}.notice{background:#fff9e9;border:1px solid #e7d7a6;border-radius:14px;padding:13px 17px;font-size:13px;line-height:1.7;margin-bottom:18px;color:#705f2b;box-shadow:0 4px 12px #15382a05}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:white;border:1px solid var(--line);border-radius:18px;padding:24px}.label{color:var(--muted);font-size:13px}.metric-head{display:flex;align-items:center;justify-content:space-between}.icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#eaf4e9;color:#527b4b}.humidity .icon{background:#e8f2f6;color:#3f7c91}.value{font-size:clamp(44px,7vw,70px);font-weight:650;letter-spacing:-3px;line-height:1.2;margin:18px 0 12px;font-variant-numeric:tabular-nums}.unit{font-size:23px;letter-spacing:0;color:#729088;font-weight:400;margin-left:9px}.metric-foot{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}.dot{height:7px;width:7px;display:inline-block;border-radius:50%;background:#9aa9a3}.dot.live{background:#379768;box-shadow:0 0 0 4px #37976812}.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-top:18px}.section-title{font-size:15px;font-weight:650;margin:0}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.legend{font-size:11px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}.legend span:before{content:"";display:inline-block;width:13px;height:3px;background:#39836a;vertical-align:middle;margin-right:5px}.legend span:last-child:before{background:#579bb7}canvas{display:block;width:100%;height:210px;margin-top:20px}.chart-foot{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;margin-top:7px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:23px 12px;margin:25px 0 0}.stats dt{font-size:12px;color:var(--muted);margin-bottom:7px}.stats dd{margin:0;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}.path{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:18px;background:#eaf0e9;border-radius:13px;padding:16px;font-size:12px;text-align:center;color:#48685d}.path small{display:block;font-size:10px;color:var(--muted);margin-top:5px}.path b{font-weight:500;color:#9ab09c}.bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:22px}button{cursor:pointer;border:1px solid #c9d8cd;background:#fff;color:#285d4d;padding:9px 13px;border-radius:9px;font:inherit;font-size:12px}button:disabled{opacity:.5;cursor:wait}button:hover{background:#edf4ec}button[aria-pressed="true"]{background:#fff2d5;border-color:#e0bd70}#sim-controls{display:none;gap:8px;flex-wrap:wrap;margin-top:15px}.hint{font-size:11px;color:var(--muted);margin:14px 0 0;line-height:1.7}footer{max-width:1080px;margin:0 auto;padding:0 24px 25px;color:#8ca095;font-size:11px;text-align:center}.warn{color:#b27132!important}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}@media(max-width:720px){header{padding:24px 20px 56px}h1{margin-top:28px}.metrics{gap:12px}.card{padding:19px}.grid{grid-template-columns:1fr}.value{margin-top:16px}.unit{font-size:17px;margin-left:5px}.stats{grid-template-columns:repeat(3,1fr);gap:20px 10px}main{padding:0 15px 25px}.legend{gap:7px}.path{gap:6px;font-size:11px}.path small{font-size:9px}.pill{font-size:10px;padding:7px 9px}canvas{height:180px}}@media(prefers-reduced-motion:no-preference){.dot.live{animation:pulse 2s infinite}@keyframes pulse{50%{box-shadow:0 0 0 5px #37976822}}}
+</style>
+<style>
+.card{min-width:0}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:480px){.value{font-size:clamp(28px,8vw,38px);letter-spacing:-1.5px;display:flex;align-items:baseline;flex-wrap:wrap}.unit{font-size:13px;margin-left:4px;letter-spacing:0}.metric-head{gap:5px}.label{font-size:11px}.icon{flex-shrink:0;width:28px;height:28px}}
+</style>
+</head>
+<body>
+<header><nav><div class="logo"><span class="mark">C</span> CAN LAB <span style="opacity:.35">/</span> 环境监测</div><span class="pill" id="connection">等待数据</span></nav><h1>看见每一次环境变化</h1><p>F2800157 · UART · S2 Mini &nbsp; / &nbsp; 温湿度采集</p></header>
+<main>
+<div class="notice" id="notice">等待真实传感器数据；本设备使用厂家自定义 CAN 协议。</div>
+<section class="metrics" aria-label="当前环境数据">
+<article class="card"><div class="metric-head"><span class="label">环境温度 / TEMPERATURE</span><span class="icon" aria-hidden="true">℃</span></div><div class="value"><span id="temperature">--</span><span class="unit">°C</span></div><div class="metric-foot"><span class="dot" id="temp-dot"></span><span id="temp-state">等待首帧数据</span></div></article>
+<article class="card humidity"><div class="metric-head"><span class="label">相对湿度 / HUMIDITY</span><span class="icon" aria-hidden="true">%</span></div><div class="value"><span id="humidity">--</span><span class="unit">%RH</span></div><div class="metric-foot"><span class="dot" id="hum-dot"></span><span id="hum-state">等待首帧数据</span></div></article>
+</section>
+<div class="grid">
+<section class="card"><div class="row"><h2 class="section-title">最近趋势</h2><div class="legend"><span>温度 °C</span><span>湿度 %RH</span></div></div><canvas id="trend" role="img" aria-label="最近60个有效采样点的温湿度趋势，左轴温度，右轴湿度"></canvas><div class="chart-foot"><span>最近 60 个采样点 · 双轴刻度</span><span>最新</span></div><div class="path"><span id="path-source">温湿度传感器<small>100 kbit/s · 扩展帧</small></span><b>→</b><span id="path-can">DCAN 接收<small>等待数据</small></span><b>→</b><span>UART<small>115200 · CRC16</small></span><b>→</b><span>Web<small>每秒刷新</small></span></div></section>
+<section class="card"><div class="row"><h2 class="section-title">通信状态</h2><span class="label" id="source">等待连接</span></div><dl class="stats"><div><dt>发送帧</dt><dd id="can-tx">0</dd></div><div><dt id="rx-label">有效 CAN 帧</dt><dd id="can-rx">0</dd></div><div><dt>CAN/解析错误</dt><dd id="can-errors">0</dd></div><div><dt>接收数据帧</dt><dd id="frames">0</dd></div><div><dt>CRC 错误</dt><dd id="crc-errors">0</dd></div><div><dt>格式错误</dt><dd id="format-errors">0</dd></div></dl><p class="hint" id="status-hint">传感器主动上报，157 无需发送读取命令；CAN 数据超时后隐藏旧值。</p></section>
+</div>
+<div class="bottom"><span id="updated" role="status" aria-live="polite">尚未收到数据</span><div><span id="uptime">运行时间 --</span>&nbsp; <button id="refresh" type="button">立即刷新</button></div></div>
+<div id="sim-controls" aria-label="电脑模拟控制"><button id="pause" type="button" aria-pressed="false">暂停数据</button><button id="fault" type="button" aria-pressed="false">注入数据故障</button><span class="hint">仅电脑模拟：验证过期提示和故障显示</span></div>
+</main>
+<footer>CAN COMMUNICATION DEMO &nbsp; · &nbsp; 本地运行，无需互联网</footer>
+<script>
+'use strict';
+/*
+ * 作用：按页面元素标识获取 DOM 节点，简化状态显示代码。
+ * 参数：id 为 HTML 元素的唯一标识字符串。
+ * 返回：对应 DOM 元素；找不到时为 null。
+ * 调用方式：$('temperature')，由本页其他函数使用，要求目标元素已存在。
+ */
+const $=id=>document.getElementById(id), points=[];
+let busy=false, latestKey=null, paused=false, fault=false, requestFailed=false;
+const sourceNames={'c2000-sensor':'真实传感器','c2000-loopback':'F2800157 内部回环','host-simulation':'电脑模拟','esp-local-simulation':'ESP 本地模拟','unknown':'等待数据'};
+/*
+ * 作用：将接口状态更新到数值、来源、计数、按钮和趋势缓存中，并重绘图表。
+ * 参数：s 为 /api/status 返回的状态对象，温湿度单位为摄氏度和相对湿度百分比。
+ * 返回：无。
+ * 调用方式：refresh() 成功解析接口 JSON 后调用 show(s)。
+ */
+function show(s){
+ requestFailed=false;
+ const valid=Boolean(s.valid&&s.online),real=s.source==='c2000-sensor',hardware=s.source==='c2000-loopback';
+ $('connection').textContent=!s.online?(s.source==='host-simulation'?'模拟数据已过期':'串口离线 / 等待数据'):real?(s.bus_off?'CAN 总线离线':valid?'传感器在线':'传感器超时 / 未接入'):(valid?'模拟数据更新中':'模拟数据无效');
+ $('connection').classList.toggle('warn',!valid);
+ $('source').textContent=sourceNames[s.source]||'等待数据';
+ $('notice').textContent=real?'真实采集 · 厂家自定义 CAN 协议，100 kbit/s、扩展帧、地址 1。':hardware?'兼容旧版回环数据 · 温湿度为模拟值，未接入真实传感器。':s.source==='host-simulation'?'电脑模拟 · 温湿度为模拟数据，未经过真实 CAN 控制器或 UART。':s.source==='esp-local-simulation'?'S2 Mini 本地模拟 · 仅验证热点和网页，未经过 F2800157 或串口。':'等待 F2800157 串口数据；接入传感器后自动显示真实采样。';
+ $('path-source').replaceChildren(document.createTextNode(real?'温湿度传感器':'模拟/待接入'));
+ const sourceDetail=document.createElement('small');sourceDetail.textContent=real?'地址 1 · 约 100ms':'以顶部来源提示为准';$('path-source').append(sourceDetail);
+ $('path-can').replaceChildren(document.createTextNode(real?'DCAN 接收':hardware?'DCAN 回环':s.source==='host-simulation'?'软件模拟':'等待 DCAN'));
+ const sub=document.createElement('small');sub.textContent=real?'100 kbit/s · 扩展帧':hardware?'控制器内部验证':'无硬件验证';$('path-can').append(sub);
+ $('temperature').textContent=valid?s.temperature.toFixed(real?1:2):'--';
+ $('humidity').textContent=valid?s.humidity.toFixed(real?1:2):'--';
+ for(const prefix of ['temp','hum']){$(prefix+'-dot').classList.toggle('live',valid);$(prefix+'-state').textContent=valid?(real?'真实采样 · 数据有效':'模拟采样 · 数据有效'):!s.online?'串口数据过期或尚未收到':real?(s.bus_off?'CAN 总线离线':'未接入传感器或有效数据超时'):'模拟数据无效';}
+ for(const [id,key] of [['can-tx','can_tx'],['can-rx','can_rx'],['can-errors','can_errors'],['frames','received_frames'],['crc-errors','crc_errors'],['format-errors','format_errors']])$(id).textContent=s[key]??0;
+ $('rx-label').textContent=real?'有效 CAN 帧':'有效模拟帧';
+ $('status-hint').textContent=real?'CAN 发送帧为 0 是正常现象：传感器主动上报。1 秒未收到有效 CAN 帧则隐藏测量值；串口状态仍可继续更新。':'当前来源未验证外部传感器；模拟数据和真实采样使用相同的 UART 遥测格式。';
+ $('can-errors').classList.toggle('warn',s.can_errors>0);
+ $('updated').textContent=s.received_frames?`最近串口接收：${(s.age_ms/1000).toFixed(1)} 秒前 · 帧序号 ${s.sequence}`:'尚未收到串口数据';
+ $('uptime').textContent='源端运行 '+Math.floor(s.uptime_ms/60000)+' 分 '+Math.floor(s.uptime_ms/1000%60)+' 秒';
+ $('sim-controls').style.display=s.source==='host-simulation'?'flex':'none';
+ if(s.source==='host-simulation'&&typeof s.sim_paused==='boolean'){paused=s.sim_paused;fault=s.sim_fault;$('pause').textContent=paused?'恢复数据':'暂停数据';$('pause').setAttribute('aria-pressed',String(paused));$('fault').textContent=fault?'清除数据故障':'注入数据故障';$('fault').setAttribute('aria-pressed',String(fault));}
+ const key=`${s.uptime_ms}:${s.sequence}`;
+ if(key!==latestKey||(!valid&&points.length&&points[points.length-1]!==null)){latestKey=key;points.push(valid?{t:s.temperature,h:s.humidity}:null);if(points.length>60)points.shift();}
+ draw();
+}
+/*
+ * 作用：根据画布尺寸和屏幕像素比绘制最近 60 个采样点的双轴趋势图。
+ * 参数：无；从页面读取画布尺寸，从 points 读取温湿度或无效断点。
+ * 返回：无。
+ * 调用方式：由 show()、refresh() 或窗口 resize 事件调用，也在页面初始化时调用。
+ */
+function draw(){
+ const c=$('trend'),r=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr);
+ const x=c.getContext('2d');if(!x)return;x.scale(dpr,dpr);
+ const w=r.width,h=r.height,L=31,R=31,T=12,B=20;
+ /* 温度轴按实际采样扩展，避免负温度被固定的 0 摄氏度下限截掉。 */
+ let tempMin=0,tempMax=40;for(const point of points){if(point){tempMin=Math.min(tempMin,point.t);tempMax=Math.max(tempMax,point.t);}}
+ tempMin=Math.floor(tempMin/10)*10;tempMax=Math.ceil(tempMax/10)*10;
+ x.font='10px system-ui';x.lineWidth=1;
+ for(let i=0;i<5;i++){const y=T+i*(h-T-B)/4;x.strokeStyle='#e9eee9';x.beginPath();x.moveTo(L,y);x.lineTo(w-R,y);x.stroke();x.fillStyle='#77948a';x.textAlign='right';x.fillText(String(Number((tempMax-i*(tempMax-tempMin)/4).toFixed(1))),L-7,y+3);x.fillStyle='#6094a5';x.textAlign='left';x.fillText(String(100-i*25),w-R+7,y+3);}
+ for(const [key,color,min,max]of[['t','#39836a',tempMin,tempMax],['h','#579bb7',0,100]]){x.beginPath();x.strokeStyle=color;x.lineWidth=2;let started=false;points.forEach(
+  /*
+   * 作用：把一个有效采样点加入当前曲线路径，无效点则断开曲线。
+   * 参数：p 为包含温度 t、湿度 h 的采样对象或 null；i 为该点在缓存中的索引。
+   * 返回：无。
+   * 调用方式：由 points.forEach() 为每个点自动调用，使用外层指定的数据轴和画笔。
+   */
+  (p,i)=>{if(!p){started=false;return;}const px=L+i/59*(w-L-R),py=T+(1-Math.min(1,Math.max(0,(p[key]-min)/(max-min))))*(h-T-B);if(!started)x.moveTo(px,py);else x.lineTo(px,py);started=true;});x.stroke();}
+ if(!points.some(Boolean)){x.fillStyle='#91a49a';x.textAlign='center';x.fillText('等待有效数据后绘制趋势',w/2,h/2);}
+}
+/*
+ * 作用：获取最新状态，防止重复请求，并在断网或超时时隐藏失效数据。
+ * 参数：无；事件回调和定时器可能传入额外参数，本函数不使用。
+ * 返回：本次请求及界面更新完成后的 Promise。
+ * 调用方式：页面初始化、每秒定时器或“立即刷新”按钮触发，也可使用 await refresh()。
+ */
+async function refresh(){
+ if(busy)return;busy=true;$('refresh').disabled=true;
+ const controller=new AbortController(),timer=setTimeout(
+  /*
+   * 作用：超过 2500 毫秒仍未完成请求时主动中止请求。
+   * 参数：无；使用外层本次请求的 controller。
+   * 返回：无。
+   * 调用方式：由 setTimeout() 自动调用，请求结束后通过 clearTimeout() 取消。
+   */
+  ()=>controller.abort(),2500);
+ try{const response=await fetch('/api/status',{cache:'no-store',signal:controller.signal});if(!response.ok)throw Error('HTTP '+response.status);show(await response.json());}
+ catch(e){if(!requestFailed){points.push(null);if(points.length>60)points.shift();requestFailed=true;}$('connection').textContent='网页连接中断';$('connection').classList.add('warn');$('temperature').textContent='--';$('humidity').textContent='--';for(const p of ['temp','hum']){$(p+'-dot').classList.remove('live');$(p+'-state').textContent='请检查 Wi-Fi 或演示服务';}$('updated').textContent='无法获取最新数据，恢复连接后自动重试';draw();}
+ finally{clearTimeout(timer);busy=false;$('refresh').disabled=false;}
+}
+/*
+ * 作用：切换电脑模拟器的暂停或数据故障状态，并刷新页面。
+ * 参数：kind 为按钮标识，取 'pause' 表示暂停切换，取 'fault' 表示故障切换。
+ * 返回：控制请求和后续刷新完成后的 Promise。
+ * 调用方式：由对应按钮的点击回调调用 control('pause') 或 control('fault')。
+ */
+async function control(kind){const button=$(kind);button.disabled=true;try{const response=await fetch('/api/sim/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(kind==='pause'?{paused:!paused}:{can_fault:!fault})});if(!response.ok)throw Error('control');const result=await response.json();paused=result.paused;fault=result.can_fault;$('pause').textContent=paused?'恢复数据':'暂停数据';$('pause').setAttribute('aria-pressed',String(paused));$('fault').textContent=fault?'清除数据故障':'注入数据故障';$('fault').setAttribute('aria-pressed',String(fault));await refresh();}catch(e){$('updated').textContent='模拟控制失败，请重试';}finally{button.disabled=false;}}
+$('refresh').addEventListener('click',refresh);$('pause').addEventListener('click',
+ /*
+  * 作用：把暂停按钮的点击转换为模拟暂停控制请求。
+  * 参数：无；浏览器传入的事件对象不使用。
+  * 返回：control('pause') 返回的 Promise，事件分发器不等待它完成。
+  * 调用方式：通过 addEventListener() 注册，用户点击暂停或恢复按钮时自动调用。
+  */
+ ()=>control('pause'));$('fault').addEventListener('click',
+ /*
+  * 作用：把故障按钮的点击转换为模拟数据故障控制请求。
+  * 参数：无；浏览器传入的事件对象不使用。
+  * 返回：control('fault') 返回的 Promise，事件分发器不等待它完成。
+  * 调用方式：通过 addEventListener() 注册，用户点击注入或清除故障按钮时自动调用。
+  */
+ ()=>control('fault'));window.addEventListener('resize',draw);draw();refresh();setInterval(refresh,1000);
+</script>
+</body></html>

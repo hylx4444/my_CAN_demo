@@ -1,0 +1,22 @@
+# 文件作用：提供 CAN 演示工程的可配置参数菜单。
+# 包含模块：热点名称与密码、UART1 收发 GPIO、本地模拟模式开关。
+# 调用方式：执行 idf.py menuconfig 后进入 CAN demo configuration 菜单配置。
+menu "CAN sensor / S2 Mini configuration"
+    config DEMO_AP_SSID
+        string "Wi-Fi hotspot SSID"
+        default "CANopen-Demo"
+    config DEMO_AP_PASSWORD
+        string "Wi-Fi hotspot password (8..63 characters)"
+        default "can-demo-123"
+    config DEMO_UART_TX_GPIO
+        int "UART1 TX GPIO"
+        range 1 18
+        default 4
+    config DEMO_UART_RX_GPIO
+        int "UART1 RX GPIO"
+        range 1 18
+        default 5
+    config DEMO_LOCAL_SIMULATION
+        bool "Generate local fake data without F2800157 (explicitly labelled on page)"
+        default n
+endmenu

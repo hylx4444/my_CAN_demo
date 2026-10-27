@@ -1,0 +1,22 @@
+# 文件作用：排除本工程自动生成且无需纳入版本管理的文件。
+# 包含模块：构建产物、ESP-IDF 本机配置与组件缓存、系统元数据。
+# releases/ 中的预编译烧录包需要随项目提交，不在此忽略。
+build/
+sdkconfig
+sdkconfig.old
+managed_components/
+dependencies.lock
+.DS_Store
+
+# CCS 自动生成的构建目录与代码索引；保留工程描述和目标配置。
+/can_uart_demo/LAUNCHXL_RAM/
+/can_uart_demo/LAUNCHXL_FLASH/
+/can_uart_demo/.clangd
+**/.cache/
+
+# 本机凭据与临时文件；公开的示例配置可正常提交。
+.env
+.env.*
+!.env.example
+*.log
+*.tmp

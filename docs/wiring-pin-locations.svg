@@ -1,0 +1,90 @@
+<!-- 文件作用：按用户照片方向展示两块开发板的 UART 和地线针位。
+     包含模块：157 排针示意、S2 Mini 背面孔位、连线对应关系、不可确认区域说明。 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1120" viewBox="0 0 1560 1120">
+<style>
+text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#233647} .title{font-size:36px;font-weight:700}.heading{font-size:27px;font-weight:700}.body{font-size:24px}.small{font-size:21px}.white,g.white text{fill:#fff}.blue{fill:#0876cb}.orange{fill:#c56b12}.green{fill:#14734d}.muted{fill:#657486}.pin{fill:#e8d7a7;stroke:#775d2f;stroke-width:3}.power{fill:#c3c8cf;stroke:#77818b;stroke-width:3}
+</style>
+<rect width="1560" height="1120" fill="#f4f7fb"/>
+<text x="48" y="58" class="title">接线针位对照图</text>
+<text x="48" y="99" class="body">方向与原照片一致：157 的 USB 口朝上；S2 Mini 背面文字朝向你。</text>
+<text x="48" y="132" class="small muted">这是针位示意图，未重绘或补全原照片中看不清的连接器；接线前请断电。</text>
+
+<rect x="36" y="158" width="716" height="750" rx="18" fill="white" stroke="#d7dfe8" stroke-width="2"/>
+<text x="62" y="202" class="heading">① 157：左上第一组排针</text>
+<text x="62" y="241" class="small">在横向黑色 JTAG 跳线及白色隔离线的下方。</text>
+<text x="62" y="273" class="small">只看这组排针上面的四排，从上往下数：</text>
+
+<rect x="273" y="320" width="393" height="335" rx="16" fill="#fff0f0" stroke="#d25454" stroke-width="3"/>
+<text x="310" y="308" class="small" text-anchor="middle">靠左侧板边 / J1</text>
+<text x="505" y="308" class="small" text-anchor="middle">靠芯片 / J3</text>
+<rect x="292" y="338" width="36" height="290" rx="8" fill="#33363d"/>
+<rect x="487" y="338" width="36" height="290" rx="8" fill="#33363d"/>
+
+<text x="251" y="374" class="body muted" text-anchor="end">第 1 根：3V3</text>
+<circle cx="310" cy="365" r="16" class="power"/>
+<circle cx="505" cy="365" r="16" class="power"/>
+<text x="542" y="374" class="body muted">5V</text>
+
+<text x="251" y="445" class="body muted" text-anchor="end">第 2 根：A6</text>
+<circle cx="310" cy="436" r="16" class="pin"/>
+<circle cx="505" cy="436" r="19" fill="#14734d" stroke="white" stroke-width="3"/>
+<text x="542" y="445" class="body green">GND ← 接地线</text>
+
+<text x="251" y="516" class="body orange" text-anchor="end">第 3 根：GPIO28</text>
+<circle cx="310" cy="507" r="19" fill="#c56b12" stroke="white" stroke-width="3"/>
+<circle cx="505" cy="507" r="16" class="pin"/>
+<text x="542" y="516" class="body muted">A15</text>
+
+<text x="251" y="587" class="body blue" text-anchor="end">第 4 根：GPIO29</text>
+<circle cx="310" cy="578" r="19" fill="#0876cb" stroke="white" stroke-width="3"/>
+<circle cx="505" cy="578" r="16" class="pin"/>
+<text x="542" y="587" class="body muted">A14</text>
+<text x="310" y="686" class="body" text-anchor="middle">下方还有其余针，不必继续数。</text>
+<text x="62" y="735" class="body blue">GPIO29 是 TX → 接 S2 Mini 的 GPIO5。</text>
+<text x="62" y="774" class="body orange">GPIO28 是 RX ← 可选接 S2 Mini 的 GPIO4。</text>
+<text x="62" y="813" class="body green">GND：同组靠芯片那列的第 2 根。</text>
+<text x="62" y="858" class="small">S2 拨码：位于 SEL1 / SEL2 白色表格正上方。</text>
+<text x="62" y="889" class="small">设置为 SEL1=1、SEL2=0，使 GPIO28/29 接到排针。</text>
+
+<rect x="778" y="158" width="746" height="750" rx="18" fill="white" stroke="#d7dfe8" stroke-width="2"/>
+<text x="804" y="202" class="heading">② S2 Mini：按照片的背面方向找孔</text>
+<text x="804" y="241" class="small">GPIO 数字按背面丝印读取，不按开发板外形猜。</text>
+<rect x="858" y="276" width="575" height="493" rx="16" fill="#654585"/>
+<text x="1145" y="308" class="small white" text-anchor="middle">上方是 USB 端</text>
+
+<g class="pin">
+<circle cx="899" cy="349" r="10"/><circle cx="942" cy="349" r="10"/><circle cx="1291" cy="349" r="10"/><circle cx="1341" cy="349" r="10"/>
+<circle cx="899" cy="400" r="10"/><circle cx="942" cy="400" r="10"/><circle cx="1291" cy="400" r="10"/><circle cx="1341" cy="400" r="10"/>
+<circle cx="899" cy="451" r="10"/><circle cx="942" cy="451" r="10"/>
+<circle cx="899" cy="502" r="10"/><circle cx="942" cy="502" r="10"/><circle cx="1291" cy="502" r="10"/><circle cx="1341" cy="502" r="10"/>
+<circle cx="899" cy="553" r="10"/><circle cx="942" cy="553" r="10"/><circle cx="1291" cy="553" r="10"/><circle cx="1341" cy="553" r="10"/>
+<circle cx="899" cy="604" r="10"/><circle cx="942" cy="604" r="10"/><circle cx="1291" cy="604" r="10"/><circle cx="1341" cy="604" r="10"/>
+<circle cx="1291" cy="655" r="10"/><circle cx="1341" cy="655" r="10"/>
+<circle cx="899" cy="706" r="10"/><circle cx="942" cy="706" r="10"/><circle cx="1291" cy="706" r="10"/><circle cx="1341" cy="706" r="10"/>
+</g>
+<g class="small white">
+<text x="968" y="357">39 / 40</text><text x="1250" y="357" text-anchor="end">1 / EN</text>
+<text x="968" y="408">37 / 38</text><text x="1250" y="408" text-anchor="end">2 / 3</text>
+<text x="968" y="459">35 / 36</text><text x="1250" y="459" text-anchor="end">4 / 5</text>
+<text x="968" y="510">33 / 34</text><text x="1250" y="510" text-anchor="end">6 / 7</text>
+<text x="968" y="561">18 / 21</text><text x="1250" y="561" text-anchor="end">8 / 9</text>
+<text x="968" y="612">16 / 17</text><text x="1250" y="612" text-anchor="end">10 / 11</text>
+<text x="968" y="663">GND/GND</text><text x="1250" y="663" text-anchor="end">13 / 12</text>
+<text x="968" y="714">VBUS/15</text><text x="1250" y="714" text-anchor="end">14 / 3V3</text>
+</g>
+<circle cx="1291" cy="451" r="19" fill="#c56b12" stroke="white" stroke-width="3"/>
+<text x="1291" y="459" class="small white" text-anchor="middle">4</text>
+<circle cx="1341" cy="451" r="19" fill="#0876cb" stroke="white" stroke-width="3"/>
+<text x="1341" y="459" class="small white" text-anchor="middle">5</text>
+<circle cx="899" cy="655" r="16" fill="#14734d" stroke="white" stroke-width="3"/>
+<circle cx="942" cy="655" r="16" fill="#14734d" stroke="white" stroke-width="3"/>
+<text x="1145" y="751" class="small white" text-anchor="middle">S2 Mini · 背面</text>
+<text x="804" y="814" class="body blue">右侧第 3 排：外侧孔 GPIO5 接 157 TX。</text>
+<text x="804" y="852" class="body orange">同排内侧孔 GPIO4 是预留 TX，可先不接。</text>
+<text x="804" y="890" class="small green">左侧倒数第 2 排 GND/GND，两孔任选一个接地。</text>
+
+<rect x="36" y="932" width="1488" height="70" rx="14" fill="#e9f1fa"/>
+<text x="64" y="977" class="heading">先接两根：157 GPIO29 → S2 GPIO5；157 GND → S2 GND。</text>
+<text x="48" y="1042" class="body">CAN：S4 是红板右下部标有 CAN ROUTE 的开关，选择 XCVR 一侧。</text>
+<text x="48" y="1082" class="body orange">J14 在原照片右边缘未拍完整：需补拍右下角近照后，才能逐针标出 CANH、CANL、GND。</text>
+</svg>

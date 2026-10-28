@@ -106,9 +106,13 @@ Watch 建议：
 | --- | --- |
 | J1 的 IO.29 / SCIA_TX，第 4 脚 | GPIO5 / UART1_RX |
 | GND | GND |
-| J1 的 IO.28 / SCIA_RX，第 3 脚 | GPIO4 / UART1_TX，可先不接，当前未实现反向命令 |
+| J1 的 IO.28 / SCIA_RX，第 3 脚 | 不连接；S2 Mini GPIO4 预留且保持输入，当前只接收遥测 |
 
 S2 Mini 的空孔需要焊排针或焊线，不能靠松插接触。UART 为 3.3V TTL、115200、8N1。157 的 S2 开关设为 SEL1=1、SEL2=0；S2 Mini 的 GPIO19/20 留给 USB，不用于数据 UART。
+
+诊断固件 `s2-diag-1` 在 `/api/status` 中增加 `esp_uptime_ms`（ESP 自身时间）、`uart_rx_bytes`（收到的原始字节数）、UART 帧错误/溢出/BREAK 计数、启动阶段和热点运行状态。旧字段 `uptime_ms` 仍是 157 上报的时间，未收到遥测时为 0。原针位图里的 GPIO4 TX 标注为历史预留接口，当前固件不驱动 GPIO4。
+
+USB 日志可用 `.\.venv\Scripts\python.exe tools/monitor_esp32s2.py --port COM6 --follow-single-esp` 采集，只连接一块 S2 Mini 时可跟随下载/运行模式的身份变化。原生 USB 的控制线可能影响复位；核对正常热点启动时应关闭串口工具后再断电启动。`boot_phase=6` 表示 HTTP 已就绪，`ap_running=true` 表示驱动已报告热点启动。
 
 传感器：白线 CANH 接 J14 HI，黄线 CANL 接 J14 LO，黑线接共地，红线接符合规格的 5V 电源。按用户提供的说明书图，保持 USB 端朝上时，板底部 J14 三针从左到右为 **GND、LO、HI**。
 
@@ -130,6 +134,10 @@ node .\tools\simulator.mjs
 
 原生 C 测试覆盖协议页样例、负温度、湿度范围、倍率溢出、错误帧类型/ID/DLC/地址、数据过期、Bus-off、毫秒回绕、CRC、分段接收及恢复。Node.js 测试覆盖 C 夹具 → UART 帧 → 网页状态、传感器失效与串口离线的区分。
 
-本次已构建 157 RAM/Flash、现有 CCS RAM 工程，以及 ESP-IDF v6.0.3 下的 S2 Mini 正常/本地模拟固件。**未执行烧录或真实硬件联调**；连接线准备好后，仍需验证 CAN 收发器、终端电阻、UART 和手机热点实际表现。
+已构建 157 RAM/Flash、现有 CCS RAM 工程，以及 ESP-IDF v6.0.3 下的 S2 Mini 正常/本地模拟固件。
+
+**2026-10-28，用户完成真实硬件联调：网页已显示传感器温湿度，改变传感器温湿度后，网页数值也相应变化。**这验证了当前固件与接线组合下的传感器 CAN → 157 → UART → S2 Mini → 手机网页链路。预编译应用与当前构建输出已核对 SHA256 一致。详细记录见 [硬件联调记录](docs/hardware-validation.md)。
+
+长期运行、传感器断线恢复、整机断电重启等专项稳定性测试尚未单独记录；热点异常的原始原因未完成单变量复现，不能仅依据最终成功归因于某一条修改。
 
 协议布局见 [docs/uart_protocol.md](docs/uart_protocol.md)。

@@ -6,7 +6,7 @@
   "project": "can_sensor_web_s2",
   "project_version": "1",
   "esp_idf": "v6.0.3",
-  "packaged_at_utc": "2026-10-27T04:30:40.2062202Z",
+  "packaged_at_utc": "2026-10-28T04:44:37.7940129Z",
   "flash_mode": "dio",
   "flash_size": "4MB",
   "flash_freq": "80m",
@@ -26,8 +26,8 @@
     {
       "offset": "0x10000",
       "file": "application.bin",
-      "bytes": 793360,
-      "sha256": "5d8521278bcc910cf839c5296d11c0a13ce5c2d4d9f5282f98d1a9d42faa40c5"
+      "bytes": 795536,
+      "sha256": "ae2b8b4bc9f7d005e9b0a65ff269a5877242fad3ccba42edaa9db60367e127a0"
     }
   ]
 }

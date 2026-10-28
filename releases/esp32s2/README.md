@@ -46,6 +46,10 @@ python -m pip install "esptool==5.6.0"
 
 如果 S2 Mini 首次连接没有端口，按住 BOOT，按一次 RESET，再松开 BOOT，重新检查设备端口。自动连接失败时可手动进入这个下载模式后重试；有端口但传输不稳定可增加 `-Baud 115200`。
 
+Windows 下原生 USB 自动复位可能使 COM 端口失效。此时关闭所有串口监听窗口，手动进入下载模式，再查询新端口；例如下载端口为 COM5 时执行 `.\tools\flash_prebuilt_esp32s2.ps1 -Python .\.venv\Scripts\python.exe -Port COM5 -DownloadMode`。DownloadMode 跳过烧录前自动复位，只用于已经进入 ROM 下载模式的板卡，不改变烧录文件和地址。
+
+当前包为 `s2-diag-1`：正常模式保留 GPIO5 接收遥测，GPIO4 不再作为发送输出，API 新增原始接收字节、硬件错误、热点事件和启动阶段。判断具体板卡是否写入新版，应以烧录成功提示及 API 中的 firmware 字段确认。
+
 烧录完成后，连接热点 CANopen-Demo，密码 can-demo-123，浏览器访问 http://192.168.4.1。正常模式需要 157 和传感器连接后才显示有效测量；模拟模式会明确标识为模拟数据。
 
 ## 当前电脑怎么更新发布包
@@ -62,6 +66,8 @@ python -m pip install "esptool==5.6.0"
 
 ## 验证范围
 
-发布包在当前电脑完成编译与 SHA256 校验；尚未执行硬件烧录。请将整套发布文件一并提交并推送到 GitHub；仅保存在当前电脑不会让另一台电脑自动获得。
+发布包已完成编译与 SHA256 校验，应用二进制与当前构建输出一致。2026-10-28，用户通过 ESP-IDF 成功烧录当前真实采集版本，并确认手机网页显示温湿度且随传感器变化。本地模拟版本通过编译与文件校验，其最新版本未另行记录硬件实测。
+
+完整联调范围与烧录注意事项见 [硬件联调记录](../../docs/hardware-validation.md)。
 
 参考：[esptool 安装说明](https://docs.espressif.com/projects/esptool/en/latest/esp32s2/installation.html)、[固件写入说明](https://docs.espressif.com/projects/esptool/en/latest/esp32s2/esptool/basic-commands.html)。

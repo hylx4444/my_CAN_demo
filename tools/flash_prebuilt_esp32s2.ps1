@@ -1,7 +1,7 @@
 <#
 文件作用：在没有 ESP-IDF 的电脑上校验并烧录仓库中的 S2 Mini 预编译固件。
 包含模块：模式选择、发布清单校验、SHA256 校验、轻量 esptool 调用；不编译或安装软件。
-参数说明：Port 为实际串口；Mode 默认 uart；Python 为 Python 命令或路径；EsptoolExe 可指定独立工具；CheckOnly 只校验，不连接板卡。
+参数说明：Port 为实际串口；Mode 默认 uart；Python 指定解释器；EsptoolExe 指定独立工具；DownloadMode 表示已手动进入下载模式；CheckOnly 只校验。
 调用方式：.\tools\flash_prebuilt_esp32s2.ps1 -Port COM7；无板卡时使用 -CheckOnly；模拟模式增加 -Mode local-sim。
 #>
 param(
@@ -9,6 +9,7 @@ param(
     [ValidateSet('uart','local-sim')][string]$Mode = 'uart',
     [string]$Python = 'python',
     [string]$EsptoolExe,
+    [switch]$DownloadMode,
     [ValidateRange(9600,921600)][int]$Baud = 460800,
     [switch]$CheckOnly
 )
@@ -41,7 +42,8 @@ foreach ($file in $manifest.files) {
 Write-Host "Package verified: $($manifest.board), mode=$Mode, ESP-IDF $($manifest.esp_idf)"
 if ($CheckOnly) { Write-Host 'CheckOnly: no serial port was opened.'; return }
 if (!$Port) { throw 'Supply the board port using -Port COMx, or use -CheckOnly.' }
-$flashOptions = @('--chip','esp32s2','--port',$Port,'--baud',"$Baud",'--before','default-reset',
+$beforeMode = if ($DownloadMode) { 'no-reset' } else { 'default-reset' }
+$flashOptions = @('--chip','esp32s2','--port',$Port,'--baud',"$Baud",'--before',$beforeMode,
     '--after','hard-reset','write-flash','--flash-mode',$manifest.flash_mode,
     '--flash-size',$manifest.flash_size,'--flash-freq',$manifest.flash_freq) + $segments
 if ($EsptoolExe) {

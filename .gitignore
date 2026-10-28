@@ -20,3 +20,8 @@ dependencies.lock
 !.env.example
 *.log
 *.tmp
+
+# Python 本地解释器环境和字节码缓存。
+.venv/
+__pycache__/
+*.pyc
